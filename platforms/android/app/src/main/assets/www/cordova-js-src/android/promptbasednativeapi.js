@@ -7,7 +7,7 @@
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ *   http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
@@ -15,21 +15,21 @@
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
  * under the License.
+*/
+
+/**
+ * Implements the API of ExposedJsApi.java, but uses prompt() to communicate.
+ * This is used pre-JellyBean, where addJavascriptInterface() is disabled.
  */
 
-// Wait for the deviceready event before using any of Cordova's device APIs.
-// See https://cordova.apache.org/docs/en/latest/cordova/events/events.html#deviceready
-document.addEventListener('deviceready', onDeviceReady, false);
-
-function onDeviceReady() {
-    // Cordova is now initialized. Have fun!
-
-    console.log('Running cordova-' + cordova.platformId + '@' + cordova.version);
-    document.getElementById('deviceready').classList.add('ready');
-    cordova.plugins.MyPlugin.coolMethod("blabla",(res)=>{
-        console.log(res);
+module.exports = {
+    exec: function (bridgeSecret, service, action, callbackId, argsJson) {
+        return prompt(argsJson, 'gap:' + JSON.stringify([bridgeSecret, service, action, callbackId]));
     },
-    (err)=>{
-        console.log(err);
-    });
-}
+    setNativeToJsBridgeMode: function (bridgeSecret, value) {
+        prompt(value, 'gap_bridge_mode:' + bridgeSecret);
+    },
+    retrieveJsMessages: function (bridgeSecret, fromOnlineEvent) {
+        return prompt(+fromOnlineEvent, 'gap_poll:' + bridgeSecret);
+    }
+};
